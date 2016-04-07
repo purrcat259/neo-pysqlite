@@ -45,8 +45,8 @@ class Pysqlite:
         except Exception as e:
             raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
         data_list = []
-        for row in db_data:
-            data_list.append(row)
+        for db_row in db_data:
+            data_list.append(db_row)
         if len(data_list) == 0:
             raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {}'.format(table, self.db_name))
         return data_list
@@ -57,8 +57,8 @@ class Pysqlite:
         except Exception as e:
             raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
         data_list = []
-        for row in db_data:
-            data_list.append(row)
+        for db_row in db_data:
+            data_list.append(db_row)
         if len(data_list) == 0:
             raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {} using the filter: {}'.format(
                 table,
@@ -89,7 +89,7 @@ class Pysqlite:
                     self.dbcon.commit()
                 except Exception as e:
                     raise PysqliteError('Pysqlite could not commit the data: {}'.format(e))
-
+"""
 if __name__ == '__main__':
     ggforcharity_db = Pysqlite('GGforCharity', 'ggforcharity.db')
     data = ggforcharity_db.get_db_data('testing')
@@ -98,3 +98,4 @@ if __name__ == '__main__':
     ggforcharity_db.insert_db_data('testing', '(NULL, ?, ?, ?, ?, ?)', ('Day String', 100, 20, 'Event', 'purrcat259'))
     for row in data:
         print(row)
+"""
