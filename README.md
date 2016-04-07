@@ -11,6 +11,13 @@ A Python wrapper to access and update tables in an SQLite database.
 * Import into your script via `from pysqlite import Pysqlite`
 * Instansiate a `Pysqlite` object and use as required
 
+## TODO
+
+* More instructions & documentation
+* More tests
+* Add methods to update rows
+* Add methods to create, drop tables
+
 ## Licence
 
 * GNU GPLv3
