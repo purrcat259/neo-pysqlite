@@ -21,6 +21,7 @@ class PysqliteCannotAccessError(PysqliteError):
 
 
 class Pysqlite:
+    # Initialise the class, make sure the file is accessible and open a connection
     def __init__(self, database_name='', database_file=''):
         self.db_name = database_name
         # Check if the database exists and if we can properly access it
@@ -30,15 +31,18 @@ class Pysqlite:
         else:
             raise PysqliteCannotAccessError(db_name=self.db_name)
 
+    # closes the current connection
     def close_connection(self):
         self.dbcon.close()
 
+    # takes a string of SQL to execute, beware using this without validation
     def execute_sql(self, execution_string):
         try:
             self.dbcur.execute(execution_string)
         except Exception as e:
             raise PysqliteError('Pysqlite exception: {}'.format(e))
 
+    # get all the data in a table as a list
     def get_db_data(self, table):
         try:
             db_data = self.dbcur.execute('SELECT * FROM {}'.format(table))
@@ -51,6 +55,7 @@ class Pysqlite:
             raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {}'.format(table, self.db_name))
         return data_list
 
+    # get data from a table whilst passing an SQL filter condition
     def get_specific_db_data(self, table, filter_string=''):
         try:
             db_data = self.dbcur.execute('SELECT * FROM {} WHERE {}'.format(table, filter_string))
@@ -67,6 +72,7 @@ class Pysqlite:
             ))
         return data_list
 
+    # insert a row to a table, pass the schema of the row as the row_string
     def insert_db_data(self, table, row_string, db_data):
         try:
             self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), db_data)
@@ -74,6 +80,7 @@ class Pysqlite:
         except Exception as e:
             raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
 
+    # insert a list of rows into a db
     def insert_rows_to_db(self, table, row_string, db_data_list):
         if len(db_data_list) == 0:
             raise PysqliteError('Pysqlite received no data to input')
