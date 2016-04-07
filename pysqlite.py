@@ -51,8 +51,10 @@ class Pysqlite:
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
+        """
         if len(data_list) == 0:
             raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {}'.format(table, self.db_name))
+        """
         return data_list
 
     # get data from a table whilst passing an SQL filter condition
@@ -64,12 +66,14 @@ class Pysqlite:
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
+        """
         if len(data_list) == 0:
             raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {} using the filter: {}'.format(
                 table,
                 self.db_name,
                 filter_string
             ))
+        """
         return data_list
 
     # insert a row to a table, pass the schema of the row as the row_string
