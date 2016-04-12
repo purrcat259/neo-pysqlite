@@ -43,7 +43,8 @@ class Pysqlite:
             if self.verbose:
                 print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
             # set the table names
-            self.table_names = self.get_table_names()
+            self.table_names = []
+            self.update_table_names()
         else:
             raise PysqliteCannotAccessException(db_name=self.db_name)
 
@@ -51,6 +52,9 @@ class Pysqlite:
         tables = self.get_specific_db_data(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
         tables = [name[0] for name in tables]
         return tables
+
+    def update_table_names(self):
+        self.table_names = self.get_table_names()
 
     # closes the current connection
     def close_connection(self):
@@ -111,6 +115,10 @@ class Pysqlite:
                     raise PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
     def delete_data(self, table, delete_string):
-        # raise an exception if the table does not exist
-
+        # check if the table is in the known table names
+        if table not in self.table_names:
+            # TODO: Check if python has lazy evaluation and rewrite this nested if
+            if table not in self.get_table_names():
+                raise PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
+        # if the table exists, go on to delete the file
         pass
