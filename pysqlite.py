@@ -56,10 +56,6 @@ class Pysqlite:
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
-        """
-        if len(data_list) == 0:
-            raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {}'.format(table, self.db_name))
-        """
         return data_list
 
     # get data from a table whilst passing an SQL filter condition
@@ -71,14 +67,6 @@ class Pysqlite:
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
-        """
-        if len(data_list) == 0:
-            raise PysqliteError('Pysqlite found no data in the table: {} in the DB: {} using the filter: {}'.format(
-                table,
-                self.db_name,
-                filter_string
-            ))
-        """
         return data_list
 
     # insert a row to a table, pass the schema of the row as the row_string
@@ -105,13 +93,3 @@ class Pysqlite:
                     self.dbcon.commit()
                 except Exception as e:
                     raise PysqliteError('Pysqlite could not commit the data: {}'.format(e))
-"""
-if __name__ == '__main__':
-    ggforcharity_db = Pysqlite('GGforCharity', 'ggforcharity.db')
-    data = ggforcharity_db.get_db_data('testing')
-    for row in data:
-        print(row)
-    ggforcharity_db.insert_db_data('testing', '(NULL, ?, ?, ?, ?, ?)', ('Day String', 100, 20, 'Event', 'purrcat259'))
-    for row in data:
-        print(row)
-"""
