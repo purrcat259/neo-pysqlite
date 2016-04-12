@@ -22,12 +22,17 @@ class PysqliteCannotAccessError(PysqliteError):
 
 class Pysqlite:
     # Initialise the class, make sure the file is accessible and open a connection
-    def __init__(self, database_name='', database_file=''):
+    def __init__(self, database_name='', database_file='', verbose=False):
         self.db_name = database_name
+        self.verbose = verbose
+        if self.verbose:
+            print('Pysqlite object initialising')
         # Check if the database exists and if we can properly access it
         if os.path.isfile(database_file) and os.access(database_file, os.R_OK):
             self.dbcon = sqlite3.connect(database_file)
             self.dbcur = self.dbcon.cursor()
+            if self.verbose:
+                print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
         else:
             raise PysqliteCannotAccessError(db_name=self.db_name)
 
