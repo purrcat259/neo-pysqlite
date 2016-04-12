@@ -1,10 +1,10 @@
 import sqlite3
 import os
 
-version = '0.1.1'
+version = '0.1.2'
 
 
-class PysqliteError(Exception):
+class PysqliteException(Exception):
     def __init__(self, value):
         self.value = value
 
@@ -12,7 +12,7 @@ class PysqliteError(Exception):
         return repr(self.value)
 
 
-class PysqliteCannotAccessError(PysqliteError):
+class PysqliteCannotAccessException(PysqliteException):
     def __init__(self, db_name):
         self.db_name = db_name
 
@@ -34,7 +34,7 @@ class Pysqlite:
             if self.verbose:
                 print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
         else:
-            raise PysqliteCannotAccessError(db_name=self.db_name)
+            raise PysqliteCannotAccessException(db_name=self.db_name)
 
     # closes the current connection
     def close_connection(self):
@@ -45,14 +45,14 @@ class Pysqlite:
         try:
             self.dbcur.execute(execution_string)
         except Exception as e:
-            raise PysqliteError('Pysqlite exception: {}'.format(e))
+            raise PysqliteException('Pysqlite exception: {}'.format(e))
 
     # get all the data in a table as a list
     def get_db_data(self, table):
         try:
             db_data = self.dbcur.execute('SELECT * FROM {}'.format(table))
         except Exception as e:
-            raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
+            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
@@ -63,7 +63,7 @@ class Pysqlite:
         try:
             db_data = self.dbcur.execute('SELECT * FROM {} WHERE {}'.format(table, filter_string))
         except Exception as e:
-            raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
+            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
@@ -75,12 +75,12 @@ class Pysqlite:
             self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), db_data)
             self.dbcon.commit()
         except Exception as e:
-            raise PysqliteError('Pysqlite experienced the following exception: {}'.format(e))
+            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
 
     # insert a list of rows into a db
     def insert_rows_to_db(self, table, row_string, db_data_list):
         if len(db_data_list) == 0:
-            raise PysqliteError('Pysqlite received no data to input')
+            raise PysqliteException('Pysqlite received no data to input')
         if len(db_data_list) == 1:
             self.insert_db_data(table, row_string, db_data_list[0])
         else:
@@ -88,8 +88,13 @@ class Pysqlite:
                 try:
                     self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), data_row)
                 except Exception as e:
-                    raise PysqliteError('Pysqlite could not insert a row: {}'.format(e))
+                    raise PysqliteException('Pysqlite could not insert a row: {}'.format(e))
                 try:
                     self.dbcon.commit()
                 except Exception as e:
-                    raise PysqliteError('Pysqlite could not commit the data: {}'.format(e))
+                    raise PysqliteException('Pysqlite could not commit the data: {}'.format(e))
+
+    def delete_row(self):
+        # raise an exception if the row does not exist
+
+        pass
