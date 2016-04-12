@@ -20,6 +20,15 @@ class PysqliteCannotAccessException(PysqliteException):
         return 'DB: {} does not exist or could not be accessed'
 
 
+class PysqliteTableDoesNotExist(PysqliteException):
+    def __init__(self, db_name, table_name):
+        self.db_name = db_name
+        self.table_name = table_name
+
+    def __str__(self):
+        return 'DB: {} does not have a table called: {}'
+
+
 class Pysqlite:
     # Initialise the class, make sure the file is accessible and open a connection
     def __init__(self, database_name='', database_file='', verbose=False):
@@ -94,7 +103,7 @@ class Pysqlite:
                 except Exception as e:
                     raise PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
-    def delete_row(self):
-        # raise an exception if the row does not exist
+    def delete_data(self, table, delete_string):
+        # raise an exception if the table does not exist
 
         pass
