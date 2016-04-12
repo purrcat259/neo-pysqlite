@@ -29,6 +29,14 @@ class PysqliteTableDoesNotExist(PysqliteException):
         return 'DB: {} does not have a table called: {}'
 
 
+class PysqliteCouldNotDeleteRow(PysqliteException):
+    def __init__(self, value):
+        self.value = value
+
+    def __str__(self):
+        return self.value
+
+
 class Pysqlite:
     # Initialise the class, make sure the file is accessible and open a connection
     def __init__(self, database_name='', database_file='', verbose=False):
@@ -114,11 +122,26 @@ class Pysqlite:
                 except Exception as e:
                     raise PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
-    def delete_data(self, table, delete_string):
+    # delete data according to a filter string
+    def delete_data(self, table, delete_filter=''):
         # check if the table is in the known table names
         if table not in self.table_names:
             # TODO: Check if python has lazy evaluation and rewrite this nested if
             if table not in self.get_table_names():
                 raise PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
-        # if the table exists, go on to delete the file
-        pass
+        # if the table exists, delete the row
+        try:
+            if delete_filter == '':
+                self.dbcur.execute('DELETE FROM {}'.format(table))
+            else:
+                self.dbcur.execute('DELETE FROM {} WHERE {}'.format(table, delete_filter))
+        except Exception as e:
+            raise PysqliteCouldNotDeleteRow(e)
+        try:
+            self.dbcon.commit()
+        except Exception as e:
+            raise PysqliteCouldNotDeleteRow('Could not commit the deletion: {}'.format(e))
+
+    # delete all the data from a table
+    def delete_all_data(self, table):
+        self.delete_data(table=table, delete_filter='')
