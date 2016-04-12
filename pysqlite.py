@@ -42,8 +42,15 @@ class Pysqlite:
             self.dbcur = self.dbcon.cursor()
             if self.verbose:
                 print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
+            # set the table names
+            self.table_names = self.get_table_names()
         else:
             raise PysqliteCannotAccessException(db_name=self.db_name)
+
+    def get_table_names(self):
+        tables = self.get_specific_db_data(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
+        tables = [name[0] for name in tables]
+        return tables
 
     # closes the current connection
     def close_connection(self):
@@ -68,9 +75,9 @@ class Pysqlite:
         return data_list
 
     # get data from a table whilst passing an SQL filter condition
-    def get_specific_db_data(self, table, filter_string=''):
+    def get_specific_db_data(self, table, contents_string='*', filter_string=''):
         try:
-            db_data = self.dbcur.execute('SELECT * FROM {} WHERE {}'.format(table, filter_string))
+            db_data = self.dbcur.execute('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
         except Exception as e:
             raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
         data_list = []
