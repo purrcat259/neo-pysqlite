@@ -123,7 +123,7 @@ class Pysqlite:
                     raise PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
     # delete data according to a filter string
-    def delete_data(self, table, delete_filter=''):
+    def delete_data(self, table, delete_string='', delete_value=()):
         # check if the table is in the known table names
         if table not in self.table_names:
             # TODO: Check if python has lazy evaluation and rewrite this nested if
@@ -131,12 +131,13 @@ class Pysqlite:
                 raise PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
         # if the table exists, delete the row
         try:
-            if delete_filter == '':
+            if delete_string == '':
                 self.dbcur.execute('DELETE FROM {}'.format(table))
             else:
-                self.dbcur.execute('DELETE FROM {} WHERE {}'.format(table, delete_filter))
+                self.dbcur.execute('DELETE FROM {} WHERE {}'.format(table, delete_string), delete_value)
         except Exception as e:
             raise PysqliteCouldNotDeleteRow(e)
+        # commit the deletion
         try:
             self.dbcon.commit()
         except Exception as e:
@@ -144,4 +145,4 @@ class Pysqlite:
 
     # delete all the data from a table
     def delete_all_data(self, table):
-        self.delete_data(table=table, delete_filter='')
+        self.delete_data(table=table, delete_string='')
