@@ -64,7 +64,6 @@ class TestDBInsertContents(unittest.TestCase):
 
 class TestDBDeleteContents(unittest.TestCase):
     def test_delete_inserted_row(self):
-        print('test delete inserted')
         global db
         # insert some test data
         db.insert_rows_to_db(table='table_one', row_string='(NULL, ?, ?)', db_data_list=test_rows)
