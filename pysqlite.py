@@ -126,7 +126,7 @@ class Pysqlite:
     def delete_data(self, table, delete_string='', delete_value=()):
         # check if the table is in the known table names
         if table not in self.table_names:
-            # TODO: Check if python has lazy evaluation and rewrite this nested if
+            # TODO: Check if python has lazy evaluation and rewrite this nested if statement
             if table not in self.get_table_names():
                 raise PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
         # if the table exists, delete the row
@@ -136,7 +136,7 @@ class Pysqlite:
             else:
                 self.dbcur.execute('DELETE FROM {} WHERE {}'.format(table, delete_string), delete_value)
         except Exception as e:
-            raise PysqliteCouldNotDeleteRow(e)
+            raise PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
         # commit the deletion
         try:
             self.dbcon.commit()
