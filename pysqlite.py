@@ -89,7 +89,7 @@ class Pysqlite:
             raise PysqliteCannotAccessException(db_name=self.db_name)
 
     def get_table_names(self):
-        tables = self.get_specific_db_data(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
+        tables = self.get_specific_rows(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
         tables = [name[0] for name in tables]
         return tables
 
