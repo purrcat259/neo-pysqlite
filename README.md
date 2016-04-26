@@ -6,8 +6,17 @@ A Python wrapper to access and update tables in an SQLite database. Previously n
 
 ## Usage
 
+### Download
+
+Run `pip install neo-pysqlite`
+
+Alternatively:
+
 * Download via GitHub
 * Run the tests using `python tests.py`
+
+### Running
+
 * Import into your script via `from neo-pysqlite import Pysqlite`
 * Instansiate a `Pysqlite` object and use as required
 
