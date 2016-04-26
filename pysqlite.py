@@ -20,6 +20,15 @@ class PysqliteCannotAccessException(PysqliteException):
         return 'DB: {} does not exist or could not be accessed'
 
 
+class PysqliteSQLExecutionException(PysqliteException):
+    def __init__(self, db_name, execution_string):
+        self.db_name = db_name
+        self.execution_string = execution_string
+
+    def __str__(self):
+        return 'Could not execute the command: {} in the DB: {}'.format(self.execution_string, self.db_name)
+
+
 class PysqliteTableDoesNotExist(PysqliteException):
     def __init__(self, db_name, table_name):
         self.db_name = db_name
@@ -35,6 +44,29 @@ class PysqliteCouldNotDeleteRow(PysqliteException):
 
     def __str__(self):
         return self.value
+
+
+class PysqliteCouldNotRetrieveData(PysqliteException):
+    def __init__(self, db_name, table_name, filter_string=''):
+        self.db_name = db_name
+        self.table_name = table_name
+        self.filter = filter_string
+
+    def __str__(self):
+        if self.filter == '':
+            return 'Could not retrieve the data from table: {} in the DB: {}'.format(self.table_name, self.db_name)
+        else:
+            return 'Could not retrieve the data with filter: {} from table: {} in the DB: {}'.format(self.filter, self.table_name, self.db_name)
+
+
+class PysqliteCouldNotInsertRow(PysqliteException):
+    def __init__(self, db_name, table_name, data_row):
+        self.db_name = db_name
+        self.table_name = table_name
+        self.data_row = data_row
+
+    def __str__(self):
+        return 'Could not insert data: {} in the table: {} in DB: {}'.format(self.data_row, self.table_name, self.db_name)
 
 
 class Pysqlite:
@@ -72,15 +104,15 @@ class Pysqlite:
     def execute_sql(self, execution_string):
         try:
             self.dbcur.execute(execution_string)
-        except Exception as e:
-            raise PysqliteException('Pysqlite exception: {}'.format(e))
+        except Exception:
+            raise PysqliteSQLExecutionException(db_name=self.db_name, execution_string=execution_string)
 
     # get all the data in a table as a list
     def get_db_data(self, table):
         try:
             db_data = self.dbcur.execute('SELECT * FROM {}'.format(table))
-        except Exception as e:
-            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
+        except Exception:
+            raise PysqliteCouldNotRetrieveData(db_name=self.db_name, table_name=table)
         data_list = []
         for db_row in db_data:
             data_list.append(db_row)
@@ -90,9 +122,10 @@ class Pysqlite:
     def get_specific_db_data(self, table, contents_string='*', filter_string=''):
         try:
             db_data = self.dbcur.execute('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
-        except Exception as e:
-            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
+        except Exception:
+            raise PysqliteCouldNotRetrieveData(db_name=self.db_name, table_name=table, filter_string=filter_string)
         data_list = []
+        # can be converted to list comprehension
         for db_row in db_data:
             data_list.append(db_row)
         return data_list
@@ -102,8 +135,8 @@ class Pysqlite:
         try:
             self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), db_data)
             self.dbcon.commit()
-        except Exception as e:
-            raise PysqliteException('Pysqlite experienced the following exception: {}'.format(e))
+        except Exception:
+            raise PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=db_data)
 
     # insert a list of rows into a db
     def insert_rows_to_db(self, table, row_string, db_data_list):
@@ -116,7 +149,7 @@ class Pysqlite:
                 try:
                     self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), data_row)
                 except Exception as e:
-                    raise PysqliteException('Pysqlite could not insert a row: {}'.format(e))
+                    raise PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=data_row)
                 try:
                     self.dbcon.commit()
                 except Exception as e:
