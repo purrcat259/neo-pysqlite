@@ -12,4 +12,4 @@ python:
   # - pip install .
   # - pip install -r requirements.txt
 # command to run tests
-script: cd pysqlite && python tests.py
+script: cd neo-pysqlite && python tests.py
