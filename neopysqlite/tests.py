@@ -1,4 +1,4 @@
-from pysqlite import Pysqlite
+from neopysqlite.neopysqlite import Pysqlite
 import unittest
 import os.path
 
