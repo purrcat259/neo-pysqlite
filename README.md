@@ -17,7 +17,7 @@ Alternatively:
 
 ### Running
 
-* Import into your script via `from neo-pysqlite import Pysqlite`
+* Import into your script via `from neopysqlite.neopysqlite import Pysqlite`
 * Instansiate a `Pysqlite` object and use as required
 
 ## TODO
