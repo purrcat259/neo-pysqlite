@@ -1,7 +1,7 @@
 import sqlite3
 import os
 
-version = '0.2'
+version = '0.2.1'
 
 
 class PysqliteException(Exception):
