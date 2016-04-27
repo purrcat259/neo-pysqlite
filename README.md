@@ -8,7 +8,7 @@ A Python wrapper to access and update tables in an SQLite database. Previously n
 
 ### Download
 
-Run `pip install neo-pysqlite`
+Run `pip install neopysqlite`
 
 Alternatively:
 
