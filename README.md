@@ -1,6 +1,6 @@
-# neo-pysqlite
+# neopysqlite
 
-A Python wrapper to access and update tables in an SQLite database. Previously named pysqlite, however it conflicted with another already existent wrapper.
+A Python wrapper to access and update tables in an SQLite database. Previously named pysqlite, however it conflicted with another already existent module.
 
 [![Build Status](https://travis-ci.org/purrcat259/pysqlite.svg?branch=master)](https://travis-ci.org/purrcat259/pysqlite)
 
