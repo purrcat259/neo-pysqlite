@@ -8,19 +8,21 @@ class Pysqlite:
     def __init__(self, database_name='', database_file='', verbose=False):
         self.db_name = database_name
         self.verbose = verbose
-        if self.verbose:
-            print('Pysqlite object for {} initialising'.format(self.db_name))
+        self.print('Pysqlite object for {} initialising'.format(self.db_name))
         # Check if the database exists and if we can properly access it
         if os.path.isfile(database_file) and os.access(database_file, os.R_OK):
             self.dbcon = sqlite3.connect(database_file)
             self.dbcur = self.dbcon.cursor()
-            if self.verbose:
-                print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
+            self.print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
             # set the table names
             self.table_names = []
             self.update_table_names()
         else:
             raise exception.PysqliteCannotAccessException(db_name=self.db_name)
+
+    def print(self, print_string):
+        if self.verbose:
+            print('[NPYSL]' + print_string)
 
     def get_table_names(self):
         tables = self.get_specific_rows(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
