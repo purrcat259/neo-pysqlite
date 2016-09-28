@@ -14,6 +14,11 @@ class PysqliteCannotAccessException(PysqliteException):
         return 'DB: {} does not exist or could not be accessed'.format(self.db_name)
 
 
+class PysqliteExecutionException(PysqliteException):
+    def __init__(self, message):
+        super(PysqliteExecutionException, self).__init__(message)
+
+
 class PysqliteSQLExecutionException(PysqliteException):
     def __init__(self, db_name, sql_string):
         self.db_name = db_name

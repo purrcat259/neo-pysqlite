@@ -11,6 +11,7 @@ class Pysqlite:
         self.verbose = verbose
         self.dbcon = None
         self.dbcur = None
+        self.connection_open = False
         self.table_names = []
         self.validate_database()
 
@@ -24,38 +25,45 @@ class Pysqlite:
             self.dbcon = sqlite3.connect(self.db_path)
             self.dbcur = self.dbcon.cursor()
             self.print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
+            self.connection_open = True
             self.update_table_names()
         else:
             raise exception.PysqliteCannotAccessException(db_name=self.db_name)
+
+    def update_table_names(self):
+        self.table_names = self.get_table_names()
 
     def get_table_names(self):
         tables = self.get_specific_rows(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
         tables = [name[0] for name in tables]
         return tables
 
-    def update_table_names(self):
-        self.table_names = self.get_table_names()
-
     def close_connection(self):
+        self.print('Closing connection to database: {}'.format(self.db_name))
         self.dbcon.close()
+        self.print('Connection closed to database: {}'.format(self.db_name))
+        self.dbcon = None
+        self.dbcur = None
+        self.connection_open = False
 
-    def execute_sql(self, sql_string):
+    def execute_sql(self, sql_string, data=()):
         try:
-            self.dbcur.execute(sql_string)
+            return self.dbcur.execute(sql_string, data)
+        except sqlite3.OperationalError:
+            raise exception.PysqliteExecutionException('SQLite3 threw an operational exception, check for mistakes in your SQL')
         except Exception:
             raise exception.PysqliteSQLExecutionException(db_name=self.db_name, sql_string=sql_string)
 
     def get_all_rows(self, table):
         try:
-            db_data = self.dbcur.execute('SELECT * FROM {}'.format(table))
+            db_data = self.execute_sql('SELECT * FROM {}'.format(table))
         except Exception:
             raise exception.PysqliteCouldNotRetrieveData(db_name=self.db_name, table_name=table)
-        data_list = [row for row in db_data]
-        return data_list
+        return [row for row in db_data]
 
     def get_specific_rows(self, table, contents_string='*', filter_string=''):
         try:
-            db_data = self.dbcur.execute('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
+            db_data = self.execute_sql('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
         except Exception:
             raise exception.PysqliteCouldNotRetrieveData(db_name=self.db_name, table_name=table, filter_string=filter_string)
         data_list = [row for row in db_data]
@@ -63,7 +71,7 @@ class Pysqlite:
 
     def insert_row(self, table, row_string, row_data):
         try:
-            self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
+            self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
             self.dbcon.commit()
         except Exception:
             raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
@@ -76,7 +84,7 @@ class Pysqlite:
         else:
             for row_data in row_data_list:
                 try:
-                    self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
+                    self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
                 except Exception as e:
                     raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
                 try:
@@ -93,9 +101,9 @@ class Pysqlite:
         # if the table exists, delete the row
         try:
             if delete_string == '':
-                self.dbcur.execute('DELETE FROM {}'.format(table))
+                self.execute_sql('DELETE FROM {}'.format(table))
             else:
-                self.dbcur.execute('DELETE FROM {} WHERE {}'.format(table, delete_string), delete_value)
+                self.execute_sql('DELETE FROM {} WHERE {}'.format(table, delete_string), delete_value)
         except Exception as e:
             raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
         # commit the deletion

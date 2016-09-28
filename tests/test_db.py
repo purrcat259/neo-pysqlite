@@ -77,3 +77,25 @@ class TestDBDelete:
         db.delete_rows(table='table_one')
         data = db.get_all_rows('table_one')
         assert data == [], 'All the table rows were not properly deleted'
+
+
+class TestDBConnection:
+    def test_db_connection_open_after_initialisation(self):
+        assert db.connection_open is True
+
+    def test_db_connection_closed_after_closing(self):
+        db_to_close = Pysqlite('Testing DB Connection', db_path=test_db_path, verbose=True)
+        db_to_close.close_connection()
+        assert db_to_close.connection_open is False
+
+
+class TestSQLStringExecution:
+    def test_passing_invalid_sql_throws_exception(self):
+        with pytest.raises(exception.PysqliteExecutionException):
+            db.execute_sql(sql_string='DELETE * FROM table_one')
+
+    def test_passing_valid_sql(self):
+        db.execute_sql(sql_string='DROP TABLE table_one')
+        assert 'table_one' not in db.get_table_names()
+
+
