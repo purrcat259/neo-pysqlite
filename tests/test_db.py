@@ -32,7 +32,7 @@ class TestDBNotEmpty:
 
     def test_db_is_not_empty(self):
         data = db.get_all_rows(table='table_one')
-        assert len(data) > 0, 'Test table "table_one" is empty'
+        assert len(data) > 0, 'Test table "table_one" is empty but it should not be empty'
 
 
 class TestDBContents:
