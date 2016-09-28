@@ -11,7 +11,7 @@ class PysqliteCannotAccessException(PysqliteException):
         self.db_name = db_name
 
     def __str__(self):
-        return 'DB: {} does not exist or could not be accessed'
+        return 'DB: {} does not exist or could not be accessed'.format(self.db_name)
 
 
 class PysqliteSQLExecutionException(PysqliteException):
@@ -29,7 +29,7 @@ class PysqliteTableDoesNotExist(PysqliteException):
         self.table_name = table_name
 
     def __str__(self):
-        return 'DB: {} does not have a table called: {}'
+        return 'DB: {} does not have a table called: {}'.format(self.db_name, self.table_name)
 
 
 class PysqliteCouldNotDeleteRow(PysqliteException):
