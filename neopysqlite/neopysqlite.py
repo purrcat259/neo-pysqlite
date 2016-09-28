@@ -5,24 +5,29 @@ import neopysqlite.exceptions as exception
 
 class Pysqlite:
     # Initialise the class, make sure the file is accessible and open a connection
-    def __init__(self, database_name='', database_file='', verbose=False):
+    def __init__(self, database_name, db_path, verbose=False):
         self.db_name = database_name
+        self.db_path = db_path
         self.verbose = verbose
-        self.print('Pysqlite object for {} initialising'.format(self.db_name))
-        # Check if the database exists and if we can properly access it
-        if os.path.isfile(database_file) and os.access(database_file, os.R_OK):
-            self.dbcon = sqlite3.connect(database_file)
-            self.dbcur = self.dbcon.cursor()
-            self.print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
-            # set the table names
-            self.table_names = []
-            self.update_table_names()
-        else:
-            raise exception.PysqliteCannotAccessException(db_name=self.db_name)
+        self.dbcon = None
+        self.dbcur = None
+        self.table_names = []
+        self.validate_database()
 
     def print(self, print_string):
         if self.verbose:
             print('[NPYSL] ' + print_string)
+
+    def validate_database(self):
+        self.print('Validating object for {}'.format(self.db_name))
+        if os.path.isfile(self.db_path) and os.access(self.db_path, os.R_OK):
+            self.dbcon = sqlite3.connect(self.db_path)
+            self.dbcur = self.dbcon.cursor()
+            self.print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
+            # set the table names
+            self.update_table_names()
+        else:
+            raise exception.PysqliteCannotAccessException(db_name=self.db_name)
 
     def get_table_names(self):
         tables = self.get_specific_rows(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
