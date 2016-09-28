@@ -1,5 +1,5 @@
 from neopysqlite.neopysqlite import Pysqlite
-import unittest
+import pytest
 import os.path
 
 # TODO: Pass database filename and tables names via argparse to run tests against a specific database
