@@ -15,9 +15,9 @@ class PysqliteCannotAccessException(PysqliteException):
 
 
 class PysqliteSQLExecutionException(PysqliteException):
-    def __init__(self, db_name, execution_string):
+    def __init__(self, db_name, sql_string):
         self.db_name = db_name
-        self.execution_string = execution_string
+        self.execution_string = sql_string
 
     def __str__(self):
         return 'Could not execute the command: {} in the DB: {}'.format(self.execution_string, self.db_name)

@@ -24,7 +24,6 @@ class Pysqlite:
             self.dbcon = sqlite3.connect(self.db_path)
             self.dbcur = self.dbcon.cursor()
             self.print('Pysqlite successfully opened database connection to: {}'.format(self.db_name))
-            # set the table names
             self.update_table_names()
         else:
             raise exception.PysqliteCannotAccessException(db_name=self.db_name)
@@ -37,18 +36,15 @@ class Pysqlite:
     def update_table_names(self):
         self.table_names = self.get_table_names()
 
-    # closes the current connection
     def close_connection(self):
         self.dbcon.close()
 
-    # takes a string of SQL to execute, beware using this without validation
-    def execute_sql(self, execution_string):
+    def execute_sql(self, sql_string):
         try:
-            self.dbcur.execute(execution_string)
+            self.dbcur.execute(sql_string)
         except Exception:
-            raise exception.PysqliteSQLExecutionException(db_name=self.db_name, execution_string=execution_string)
+            raise exception.PysqliteSQLExecutionException(db_name=self.db_name, sql_string=sql_string)
 
-    # get all the data in a table as a list
     def get_all_rows(self, table):
         try:
             db_data = self.dbcur.execute('SELECT * FROM {}'.format(table))
@@ -57,7 +53,6 @@ class Pysqlite:
         data_list = [row for row in db_data]
         return data_list
 
-    # get data from a table whilst passing an SQL filter condition
     def get_specific_rows(self, table, contents_string='*', filter_string=''):
         try:
             db_data = self.dbcur.execute('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
@@ -66,7 +61,6 @@ class Pysqlite:
         data_list = [row for row in db_data]
         return data_list
 
-    # insert a row to a table, pass the schema of the row as the row_string
     def insert_row(self, table, row_string, row_data):
         try:
             self.dbcur.execute('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
@@ -74,7 +68,6 @@ class Pysqlite:
         except Exception:
             raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
-    # insert a list of rows into a db
     def insert_rows(self, table, row_string, row_data_list):
         if len(row_data_list) == 0:
             raise exception.PysqliteException('Pysqlite received no data to input')
@@ -91,7 +84,6 @@ class Pysqlite:
                 except Exception as e:
                     raise exception.PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
-    # delete data according to a filter string
     def delete_rows(self, table, delete_string='', delete_value=()):
         # check if the table is in the known table names
         if table not in self.table_names:
@@ -112,6 +104,5 @@ class Pysqlite:
         except Exception as e:
             raise exception.PysqliteCouldNotDeleteRow('Could not commit the deletion: {}'.format(e))
 
-    # delete all the data from a table
     def delete_all_rows(self, table):
         self.delete_rows(table=table, delete_string='')
