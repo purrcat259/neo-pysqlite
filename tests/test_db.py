@@ -13,7 +13,7 @@ test_rows = [
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 test_db_path = os.path.join(current_directory, 'test.db')
-db = Pysqlite(database_name='Test DB', database_file=test_db_path)
+db = Pysqlite(database_name='Test DB', database_file=test_db_path, verbose=True)
 
 
 class TestDBAccess:

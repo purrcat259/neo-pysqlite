@@ -22,7 +22,7 @@ class Pysqlite:
 
     def print(self, print_string):
         if self.verbose:
-            print('[NPYSL]' + print_string)
+            print('[NPYSL] ' + print_string)
 
     def get_table_names(self):
         tables = self.get_specific_rows(table='sqlite_master', contents_string='name', filter_string='type = \'table\'')
