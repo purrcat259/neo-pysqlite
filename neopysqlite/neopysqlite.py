@@ -30,6 +30,11 @@ class Pysqlite:
         else:
             raise exception.PysqliteCannotAccessException(db_name=self.db_name)
 
+    def check_table_exists(self, table):
+        self.update_table_names()
+        if table not in self.table_names:
+            raise exception.PysqliteTableDoesNotExist
+
     def update_table_names(self):
         self.table_names = self.get_table_names()
 
@@ -93,24 +98,15 @@ class Pysqlite:
                     raise exception.PysqliteException('Pysqlite could not commit the data: {}'.format(e))
 
     def delete_rows(self, table, delete_string='', delete_value=()):
-        # check if the table is in the known table names
-        if table not in self.table_names:
-            # TODO: Check if python has lazy evaluation and rewrite this nested if statement
-            if table not in self.get_table_names():
-                raise exception.PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
-        # if the table exists, delete the row
+        self.check_table_exists(table=table)
+        execution_string = 'DELETE FROM {}'.format(table)
+        if not delete_string == '':
+            execution_string += ' WHERE {}'.format(delete_string)
         try:
-            if delete_string == '':
-                self.execute_sql('DELETE FROM {}'.format(table))
-            else:
-                self.execute_sql('DELETE FROM {} WHERE {}'.format(table, delete_string), delete_value)
-        except Exception as e:
-            raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
-        # commit the deletion
-        try:
+            self.execute_sql(execution_string, delete_value)
             self.dbcon.commit()
         except Exception as e:
-            raise exception.PysqliteCouldNotDeleteRow('Could not commit the deletion: {}'.format(e))
+            raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
 
     def delete_all_rows(self, table):
         self.delete_rows(table=table, delete_string='')
