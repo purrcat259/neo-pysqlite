@@ -78,6 +78,7 @@ class Pysqlite:
         return [row for row in db_data]
 
     def insert_row(self, table, row_string, row_data):
+        self.check_table_exists(table=table)
         try:
             self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
             self.commit_changes()

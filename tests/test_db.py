@@ -69,6 +69,10 @@ class TestDBInsert:
         assert data[-1][1] == 'turkey', 'Requested field 1 not as expected'
         assert data[-1][2] == 'goose', 'Requested field 2 not as expected'
 
+    def test_insert_row_to_non_existent_table_throws_exception(self):
+        with pytest.raises(exception.PysqliteTableDoesNotExist):
+            db.insert_row(table='oifdjgiodjf', row_string='', row_data=())
+
 
 class TestDBDelete:
     def test_delete_new_inserted_row(self):
