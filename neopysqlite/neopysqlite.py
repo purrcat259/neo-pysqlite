@@ -82,20 +82,12 @@ class Pysqlite:
             raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
     def insert_rows(self, table, row_string, row_data_list):
-        if len(row_data_list) == 0:
-            raise exception.PysqliteException('Pysqlite received no data to input')
-        if len(row_data_list) == 1:
-            self.insert_row(table, row_string, row_data_list[0])
-        else:
-            for row_data in row_data_list:
-                try:
-                    self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
-                except Exception as e:
-                    raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
-                try:
-                    self.dbcon.commit()
-                except Exception as e:
-                    raise exception.PysqliteException('Pysqlite could not commit the data: {}'.format(e))
+        for row_data in row_data_list:
+            try:
+                self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
+                self.dbcon.commit()
+            except Exception:
+                raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
     def delete_rows(self, table, delete_string='', delete_value=()):
         self.check_table_exists(table=table)
