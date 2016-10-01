@@ -35,6 +35,9 @@ class Pysqlite:
         if table not in self.table_names:
             raise exception.PysqliteTableDoesNotExist
 
+    def commit_changes(self):
+        self.dbcon.commit()
+
     def update_table_names(self):
         self.table_names = self.get_table_names()
 
@@ -77,7 +80,7 @@ class Pysqlite:
     def insert_row(self, table, row_string, row_data):
         try:
             self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
-            self.dbcon.commit()
+            self.commit_changes()
         except Exception:
             raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
@@ -85,7 +88,7 @@ class Pysqlite:
         for row_data in row_data_list:
             try:
                 self.execute_sql('INSERT INTO {} VALUES {}'.format(table, row_string), row_data)
-                self.dbcon.commit()
+                self.commit_changes()
             except Exception:
                 raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
@@ -96,7 +99,7 @@ class Pysqlite:
             execution_string += ' WHERE {}'.format(delete_string)
         try:
             self.execute_sql(execution_string, delete_value)
-            self.dbcon.commit()
+            self.commit_changes()
         except Exception as e:
             raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
 
