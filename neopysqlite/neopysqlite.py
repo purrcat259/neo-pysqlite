@@ -4,7 +4,6 @@ import neopysqlite.exceptions as exception
 
 
 class Neopysqlite:
-    # Initialise the class, make sure the file is accessible and open a connection
     def __init__(self, database_name, db_path, verbose=False):
         self.db_name = database_name
         self.db_path = db_path
