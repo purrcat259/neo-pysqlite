@@ -74,8 +74,7 @@ class Pysqlite:
             db_data = self.execute_sql('SELECT {} FROM {} WHERE {}'.format(contents_string, table, filter_string))
         except Exception:
             raise exception.PysqliteCouldNotRetrieveData(db_name=self.db_name, table_name=table, filter_string=filter_string)
-        data_list = [row for row in db_data]
-        return data_list
+        return [row for row in db_data]
 
     def insert_row(self, table, row_string, row_data):
         try:
@@ -100,8 +99,8 @@ class Pysqlite:
         try:
             self.execute_sql(execution_string, delete_value)
             self.commit_changes()
-        except Exception as e:
-            raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
+        except Exception:
+            raise exception.PysqliteCouldNotDeleteRow
 
     def delete_all_rows(self, table):
         self.delete_rows(table=table)
