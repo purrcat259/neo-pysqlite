@@ -109,4 +109,4 @@ class Pysqlite:
             raise exception.PysqliteCouldNotDeleteRow('Could not perform the deletion: {}'.format(e))
 
     def delete_all_rows(self, table):
-        self.delete_rows(table=table, delete_string='')
+        self.delete_rows(table=table)
