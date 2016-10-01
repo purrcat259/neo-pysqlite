@@ -38,7 +38,7 @@ class TestDBNotEmpty:
         assert len(data) > 0, 'Test table "table_one" is empty but it should not be empty'
 
     def test_getting_rows_from_nonexistent_table_throws_exception(self):
-        with pytest.raises(exception.PysqliteCouldNotRetrieveData):
+        with pytest.raises(exception.PysqliteTableDoesNotExist):
             data = db.get_all_rows(table='table_two')
 
 

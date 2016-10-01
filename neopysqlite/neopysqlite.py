@@ -30,13 +30,13 @@ class Pysqlite:
         else:
             raise exception.PysqliteCannotAccessException(db_name=self.db_name)
 
+    def commit_changes(self):
+        self.dbcon.commit()
+
     def check_table_exists(self, table):
         self.update_table_names()
         if table not in self.table_names:
-            raise exception.PysqliteTableDoesNotExist
-
-    def commit_changes(self):
-        self.dbcon.commit()
+            raise exception.PysqliteTableDoesNotExist(db_name=self.db_name, table_name=table)
 
     def update_table_names(self):
         self.table_names = self.get_table_names()
@@ -63,6 +63,7 @@ class Pysqlite:
             raise exception.PysqliteSQLExecutionException(db_name=self.db_name, sql_string=sql_string)
 
     def get_all_rows(self, table):
+        self.check_table_exists(table=table)
         try:
             db_data = self.execute_sql('SELECT * FROM {}'.format(table))
         except Exception:
