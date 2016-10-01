@@ -1,7 +1,7 @@
 import os
 import pytest
 import neopysqlite.exceptions as exception
-from neopysqlite.neopysqlite import Pysqlite
+from neopysqlite.neopysqlite import Neopysqlite
 
 
 # TODO: Pass database filename and tables names via argparse to run tests against a specific database
@@ -16,7 +16,7 @@ test_rows = [
 
 current_directory = os.path.dirname(os.path.abspath(__file__))
 test_db_path = os.path.join(current_directory, 'test.db')
-db = Pysqlite(database_name='Test DB', db_path=test_db_path, verbose=True)
+db = Neopysqlite(database_name='Test DB', db_path=test_db_path, verbose=True)
 
 
 class TestDBAccess:
@@ -45,7 +45,7 @@ class TestDBNotEmpty:
 class TestInitialiseInvalidDB:
     def test_db_does_not_exist_throws_exception(self):
         with pytest.raises(exception.PysqliteCannotAccessException):
-            db = Pysqlite(database_name='foo', db_path='odfsjiojsdf.jojiv', verbose=True)
+            db = Neopysqlite(database_name='foo', db_path='odfsjiojsdf.jojiv', verbose=True)
 
 
 class TestDBContents:
@@ -92,7 +92,7 @@ class TestDBConnection:
         assert db.connection_open is True
 
     def test_db_connection_closed_after_closing(self):
-        db_to_close = Pysqlite('Testing DB Connection', db_path=test_db_path, verbose=True)
+        db_to_close = Neopysqlite('Testing DB Connection', db_path=test_db_path, verbose=True)
         db_to_close.close_connection()
         assert db_to_close.connection_open is False
 
