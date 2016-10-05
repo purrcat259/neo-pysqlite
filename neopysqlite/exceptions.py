@@ -66,3 +66,14 @@ class PysqliteCouldNotInsertRow(PysqliteException):
 
     def __str__(self):
         return 'Could not insert data: {} in the table: {} in DB: {}'.format(self.data_row, self.table_name, self.db_name)
+
+
+class PysqliteCouldNotUpdateRow(PysqliteException):
+    def __init__(self, db_name, table_name, update_string, filter_string):
+        self.db_name = db_name
+        self.table_name = table_name
+        self.update_string = update_string
+        self.filter_string = filter_string
+
+    def __str__(self):
+        return 'Could not update data in the table: {} in DB: {}. Update String: {}. Filter String: {}'.format(self.table_name, self.db_name, self.update_string, self.filter_string)

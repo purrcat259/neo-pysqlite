@@ -92,6 +92,13 @@ class Neopysqlite:
             except Exception:
                 raise exception.PysqliteCouldNotInsertRow(db_name=self.db_name, table_name=table, data_row=row_data)
 
+    def update_rows(self, table, update_string, update_values, filter_string):
+        try:
+            self.execute_sql('UPDATE {} SET {} WHERE {}'.format(table, update_string, filter_string), data=update_values)
+            self.commit_changes()
+        except Exception:
+            raise exception.PysqliteCouldNotUpdateRow(db_name=self.db_name, table_name=table, update_string=update_string, filter_string=filter_string)
+
     def delete_rows(self, table, delete_string='', delete_value=()):
         self.check_table_exists(table=table)
         execution_string = 'DELETE FROM {}'.format(table)
